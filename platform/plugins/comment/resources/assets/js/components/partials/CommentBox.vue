@@ -26,6 +26,7 @@
 
             <input type="hidden" name="reference" :value="reference" />
             <input type="hidden" name="parent_id" :value="parentId" />
+            <input type="hidden" name="status" :value="status" />
             <input type="hidden" name="comment_id" :value="commentId" v-if="isEdit" />
         </form>
     </div>
@@ -88,6 +89,14 @@ export default {
         }
     },
     props: {
+        email: {
+          type: String,
+          default: '',
+        },
+        status: {
+            type: String,
+            default: 'published',
+        },
         parentId: {
             type: Number,
             default: 0,
@@ -131,6 +140,42 @@ export default {
         if (this.defaultValue) {
             this.value = this.defaultValue;
         }
+    },
+    watch: {
+       email: function (val) {
+           if (val !== '') {
+               console.log(this.reference);
+               console.log(this.parentId);
+               console.log(this.commentId);
+               const formdata = new FormData();
+               formdata.append('comment', 'I invite You.');
+               formdata.append('parent_id', this.parentId);
+               formdata.append('reference', this.reference);
+               formdata.append('status', 'private');
+               Http.post(this.postUrl, formdata)
+                   .then(({ data }) => {
+                       this.isSending = false;
+                       if (!data.error) {
+                           this.value = '';
+                           const textarea = this.$el.querySelector('textarea');
+                           this.onSuccess(data.data, false, index);
+                           this.error = false;
+                           textarea.value = '';
+                           textarea.classList.remove('focused')
+                           textarea.style.height = 'auto';
+                           this.updateCount();
+                       } else {
+                           this.onSuccess(null, false, -1);
+                           this.error = JSON.parse(data.message).comment[0];//data.message[Object.keys(data.message)[0]][0]
+                       }
+                   }, error => {
+                       this.onSuccess(null, false, -1);
+                       this.isSending = false;
+                       this.error = error.response?.statusText ?? error.message;
+                       console.log(this.error);
+                   })
+           }
+       }
     },
     inject: ['getUser', 'data', 'reference', 'postUrl', 'updateCount', 'openLoginForm']
 }

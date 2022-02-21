@@ -2781,6 +2781,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
  //import CommentRating from "./CommentRating";
 
 
@@ -2811,7 +2812,9 @@ __webpack_require__.r(__webpack_exports__);
         this.openLoginForm();
       } else {
         var formData = $(e.target).serializeData();
-        var index = this.onSuccess(formData, true);
+
+        var _index = this.onSuccess(formData, true);
+
         this.isSending = true;
         _service_http__WEBPACK_IMPORTED_MODULE_2__["default"].post(this.postUrl, formData).then(function (_ref) {
           var data = _ref.data;
@@ -2822,7 +2825,7 @@ __webpack_require__.r(__webpack_exports__);
 
             var textarea = _this.$el.querySelector('textarea');
 
-            _this.onSuccess(data.data, false, index);
+            _this.onSuccess(data.data, false, _index);
 
             _this.error = false;
             textarea.value = '';
@@ -2847,6 +2850,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   props: {
+    email: {
+      type: String,
+      "default": ''
+    },
+    status: {
+      type: String,
+      "default": 'published'
+    },
     parentId: {
       type: Number,
       "default": 0
@@ -2893,6 +2904,53 @@ __webpack_require__.r(__webpack_exports__);
 
     if (this.defaultValue) {
       this.value = this.defaultValue;
+    }
+  },
+  watch: {
+    email: function email(val) {
+      var _this2 = this;
+
+      if (val !== '') {
+        console.log(this.reference);
+        console.log(this.parentId);
+        console.log(this.commentId);
+        var formdata = new FormData();
+        formdata.append('comment', 'I invite You.');
+        formdata.append('parent_id', this.parentId);
+        formdata.append('reference', this.reference);
+        formdata.append('status', 'private');
+        _service_http__WEBPACK_IMPORTED_MODULE_2__["default"].post(this.postUrl, formdata).then(function (_ref2) {
+          var data = _ref2.data;
+          _this2.isSending = false;
+
+          if (!data.error) {
+            _this2.value = '';
+
+            var textarea = _this2.$el.querySelector('textarea');
+
+            _this2.onSuccess(data.data, false, index);
+
+            _this2.error = false;
+            textarea.value = '';
+            textarea.classList.remove('focused');
+            textarea.style.height = 'auto';
+
+            _this2.updateCount();
+          } else {
+            _this2.onSuccess(null, false, -1);
+
+            _this2.error = JSON.parse(data.message).comment[0]; //data.message[Object.keys(data.message)[0]][0]
+          }
+        }, function (error) {
+          var _error$response$statu2, _error$response2;
+
+          _this2.onSuccess(null, false, -1);
+
+          _this2.isSending = false;
+          _this2.error = (_error$response$statu2 = (_error$response2 = error.response) === null || _error$response2 === void 0 ? void 0 : _error$response2.statusText) !== null && _error$response$statu2 !== void 0 ? _error$response$statu2 : error.message;
+          console.log(_this2.error);
+        });
+      }
     }
   },
   inject: ['getUser', 'data', 'reference', 'postUrl', 'updateCount', 'openLoginForm']
@@ -3207,6 +3265,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UserName__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UserName */ "./platform/plugins/comment/resources/assets/js/components/partials/UserName.vue");
 /* harmony import */ var _StarRating__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./StarRating */ "./platform/plugins/comment/resources/assets/js/components/partials/StarRating/index.vue");
 /* harmony import */ var _service_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../service/http */ "./platform/plugins/comment/resources/assets/js/service/http.js");
+/* harmony import */ var _service_Ls__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../service/Ls */ "./platform/plugins/comment/resources/assets/js/service/Ls.js");
 //
 //
 //
@@ -3278,6 +3337,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 
 
 
@@ -3290,7 +3351,9 @@ __webpack_require__.r(__webpack_exports__);
       showReply: false,
       comments: [],
       attrs: {},
-      showEdit: false
+      showEdit: false,
+      activePage: false,
+      deleted: false
     };
   },
   components: {
@@ -3313,6 +3376,26 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
+    var _this = this;
+
+    var self = this;
+    window.Echo.channel('post').listen('.Botble\\Comment\\Events\\NewCommentEvent', function (e) {
+      if (e.comment.parent_id == _this.comment.id) {
+        self.comments.unshift(e.comment);
+      }
+    });
+    window.Echo.channel('like').listen('.Botble\\Comment\\Events\\NewLikeEvent', function (e) {
+      if (self.comment.id == e.commentId && !self.activePage) {
+        self.comment.liked = !self.comment.liked;
+        self.comment.like_count += e.liked ? 1 : -1;
+      }
+    });
+    window.Echo.channel('delete').listen('.Botble\\Comment\\Events\\DeleteCommentEvent', function (e) {
+      if (e.id == self.comment.id) {
+        self.deleted = true;
+        self.attrs.count_all -= 1;
+      }
+    });
     var rep = this.comment.rep;
 
     if (rep && rep.data) {
@@ -3372,25 +3455,25 @@ __webpack_require__.r(__webpack_exports__);
       this.comment = comment;
     },
     onDelete: function onDelete() {
-      var _this = this;
+      var _this2 = this;
 
       this.showConfirm(this.__('Confirm'), this.__('Are you sure that want to delete this comment?'), function (ok) {
         if (ok) {
-          _this.setSoftLoading(true);
+          _this2.setSoftLoading(true);
 
-          _service_http__WEBPACK_IMPORTED_MODULE_4__["default"]["delete"](_this.deleteUrl, {
+          _service_http__WEBPACK_IMPORTED_MODULE_4__["default"]["delete"](_this2.deleteUrl, {
             params: {
-              id: _this.comment.id
+              id: _this2.comment.id
             }
           }).then(function (res) {
             var data = res.data;
 
-            _this.setSoftLoading(false);
+            _this2.setSoftLoading(false);
 
             if (!data.error) {
-              _this.updateCount(false);
+              _this2.updateCount(false);
 
-              _this.onDeleteItem();
+              _this2.onDeleteItem();
             }
           });
         }
@@ -3400,18 +3483,19 @@ __webpack_require__.r(__webpack_exports__);
       this.comments.splice(index, 1);
     },
     onLoadMore: function onLoadMore() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.apiLoadComments({
         up: this.comment.id,
         page: this.attrs.current_page + 1,
         limit: this.attrs.per_page
       }, function (data) {
-        _this2.comments = data.data.comments.reverse().concat(_this2.comments);
-        _this2.attrs = data.data.attrs;
+        _this3.comments = data.data.comments.reverse().concat(_this3.comments);
+        _this3.attrs = data.data.attrs;
       });
     },
     onLike: function onLike() {
+      this.activePage = true;
       this.comment.liked = !this.comment.liked;
       this.comment.like_count += this.comment.liked ? 1 : -1;
       _service_http__WEBPACK_IMPORTED_MODULE_4__["default"].post(this.likeUrl, {
@@ -14251,6 +14335,11 @@ var render = function () {
             domProps: { value: _vm.parentId },
           }),
           _vm._v(" "),
+          _c("input", {
+            attrs: { type: "hidden", name: "status" },
+            domProps: { value: _vm.status },
+          }),
+          _vm._v(" "),
           _vm.isEdit
             ? _c("input", {
                 attrs: { type: "hidden", name: "comment_id" },
@@ -14576,6 +14665,14 @@ var render = function () {
   return _c(
     "div",
     {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.data.userData && !_vm.deleted,
+          expression: "data.userData && !deleted",
+        },
+      ],
       staticClass: "bb-comment-item",
       class: { "is-sending": _vm.comment.isSending },
     },
@@ -14694,7 +14791,6 @@ var render = function () {
                           _c("comment-box", {
                             attrs: {
                               "parent-id": _vm.comment.id,
-                              "on-success": _vm.onPostCommentSuccess,
                               "auto-focus": "true",
                             },
                           }),
@@ -14703,6 +14799,11 @@ var render = function () {
                       )
                     : _vm._e(),
                 ]
+              ),
+              _vm._v(
+                "\n             " +
+                  _vm._s(_vm.comment.status) +
+                  "\n            "
               ),
               _vm._v(" "),
               _vm.showEdit
@@ -14715,6 +14816,7 @@ var render = function () {
                       "on-cancel": _vm.onCancel,
                       "parent-id": _vm.comment.parent_id,
                       "comment-id": _vm.comment.id,
+                      status: _vm.comment.status,
                     },
                   })
                 : _vm._e(),
