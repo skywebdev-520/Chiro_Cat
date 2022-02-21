@@ -2,7 +2,7 @@
     <div class="bb-comment-box d-flex" :class="{'has-rating': hasRating}">
         <avatar v-if="!isEdit" :user="data.userData"></avatar>
         <form class="bb-textarea" @submit="this.postComment">
-            <comment-rating v-if="hasRating" :rating="data.rating ? data.rating.rated : 0" />
+            <!-- <comment-rating v-if="hasRating" :rating="data.rating ? data.rating.rated : 0" /> -->
 
             <textarea class="form-control" rows="1" name="comment" placeholder="Share your thoughts about that" @change="onChange" :value="value" />
             <div class="bb-textarea-error alert alert-danger m-0" v-if="error">
@@ -33,7 +33,7 @@
 
 <script>
 import Avatar from './Avatar';
-import CommentRating from "./CommentRating";
+//import CommentRating from "./CommentRating";
 import { setResizeListeners } from '../helpers';
 import Http from '../../service/http';
 
@@ -41,7 +41,7 @@ export default {
     name: 'CommentBox',
     components: {
         Avatar,
-        CommentRating,
+//        CommentRating,
     },
     data: () => {
         return {

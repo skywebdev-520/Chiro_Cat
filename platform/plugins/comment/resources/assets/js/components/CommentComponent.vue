@@ -167,8 +167,7 @@ export default {
             var self = this;
             window.Echo.channel('comment')
             .listen('.Botble\\Comment\\Events\\NewCommentEvent', (e) => {
-                console.log(this.reactive.userData);
-                console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                console.log(this.reactive.userData);                
                 console.log(e);
                 if (self.reactive.userData.email !== e.commentUser.email) {
                     self.reactive.attrs.count_all += 1;
