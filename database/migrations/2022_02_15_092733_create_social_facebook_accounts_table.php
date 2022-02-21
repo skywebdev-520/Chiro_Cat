@@ -13,11 +13,12 @@ class CreateSocialFacebookAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('social_facebook_accounts', function (Blueprint $table) {
-            $table->integer('user_id');
-            $table->string('provider_user_id');
-            $table->string('provider');
-            $table->timestamps();
+        Schema::create('re_accounts', function (Blueprint $table) {
+            $table->string('facebook_id')->nullable();
+            $table->string('name');
+            $table->string('email')->unique();            
+            $table->string('password');
+            $table->string('status');
         });
     }
 
@@ -28,6 +29,8 @@ class CreateSocialFacebookAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('social_facebook_accounts');
+        Schema::table('re_accounts', function (Blueprint $table) {
+            $table->dropColumn('facebook_id');
+        });        
     }
 }

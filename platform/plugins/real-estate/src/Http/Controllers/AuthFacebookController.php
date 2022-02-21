@@ -3,10 +3,11 @@
 namespace Botble\RealEstate\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-
+use App\Models\SocialFacebookAccount;
 use Illuminate\Http\Request;
 use Socialite;
 use Botble\RealEstate\Services\SocialFacebookAccountService;
+use Illuminate\Auth\Events\Registered;
 
 class AuthFacebookController extends Controller
 {
@@ -28,7 +29,15 @@ class AuthFacebookController extends Controller
     public function callback(SocialFacebookAccountService $service)
     {
         $user = $service->createOrGetUser(Socialite::driver('facebook')->user());
-        auth()->login($user);
+        $saveUser = [
+            'facebook_id' => $user->getId(),
+            'first_name' => $user->getName(),
+            'username' => $user->getName(),
+            'email' => $user->getEmail(),
+            'password' => Hash::make($user->getName().'@'.$user->getId())
+        ];
+        event(new Registered($this->createOrUpdate($saveUser,['facebook_id' => $user->getId()])));
+        auth()->login($saveUser);
         return redirect()->to('/projects');
     }
 }

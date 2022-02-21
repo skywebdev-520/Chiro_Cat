@@ -7,5 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class SocialFacebookAccount extends Model
 {
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'status',
+        'facebook_id'
+    ];
+    
     use HasFactory;
 }

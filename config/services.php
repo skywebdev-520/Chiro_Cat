@@ -33,7 +33,7 @@ return [
     'facebook' => [
         'client_id' => '679273986756373',
         'client_secret' => 'e5426fd0d2cf2112c40b379072367608',
-        'redirect' => '//localhost:8000/callback',
+        'redirect' => 'https://listingpages.realestate/callback/',
     ],
 
 ];
