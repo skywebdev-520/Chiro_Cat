@@ -38,7 +38,7 @@ class AuthFacebookController extends Controller
                 'email' => $user->getEmail(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ];
-            event(RepositoryInterface::createOrUpdate($saveUser,['facebook_id' => $user->getId()]));
+            RepositoryInterface::createOrUpdate($saveUser,['facebook_id' => $user->getId()]);
             auth()->login($saveUser);
             return redirect()->to('/projects');
         } catch (\Throwable $th) {
