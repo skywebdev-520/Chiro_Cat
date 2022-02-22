@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use Botble\Support\Repositories\Interfaces\RepositoryInterface;
 
 class AuthFacebookController extends Controller
 {
@@ -37,7 +38,7 @@ class AuthFacebookController extends Controller
                 'email' => $user->getEmail(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ];
-            event(new Registered($this->createOrUpdate($saveUser,['facebook_id' => $user->getId()])));
+            event(RepositoryInterface::createOrUpdate($saveUser,['facebook_id' => $user->getId()]));
             auth()->login($saveUser);
             return redirect()->to('/projects');
         } catch (\Throwable $th) {
