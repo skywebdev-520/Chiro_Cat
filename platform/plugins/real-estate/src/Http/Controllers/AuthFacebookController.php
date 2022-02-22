@@ -33,6 +33,11 @@ class AuthFacebookController extends Controller
      *
      * @return callback URL from facebook
      */
+    protected function guard()
+    {
+        return auth('account');
+    }
+
     public function callback()
     {       
         try { 
@@ -45,8 +50,9 @@ class AuthFacebookController extends Controller
                 'email' => $user->getEmail(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ];
-            $this->accountRepository->createOrUpdate($saveUser,['facebook_id' => $user->getId()]);            
-            auth()->login($saveUser);
+            $this->accountRepository->createOrUpdate($saveUser,['facebook_id' => $user->getId()]); 
+            $this->guard()->login($saveUser);           
+            //auth()->login($saveUser);
             return redirect()->to('/projects');
         } catch (\Throwable $th) {
             throw $th;
