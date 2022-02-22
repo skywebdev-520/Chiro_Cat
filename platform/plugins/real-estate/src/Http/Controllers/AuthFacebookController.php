@@ -5,10 +5,9 @@ namespace Botble\RealEstate\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 //use Socialite;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
-use Botble\Support\Repositories\Interfaces\RepositoryInterface;
+use Botble\RealEstate\Repositories\Interfaces\AccountInterface;
 
 class AuthFacebookController extends Controller
 {
@@ -17,6 +16,13 @@ class AuthFacebookController extends Controller
    *
    * @return void
    */
+    protected $accountRepository;
+
+    public function __construct(AccountInterface $accountRepository)
+    {
+        $this->accountRepository = $accountRepository;    
+    }
+
     public function redirect()
     {
         return Socialite::driver('facebook')->redirect();
@@ -38,7 +44,7 @@ class AuthFacebookController extends Controller
                 'email' => $user->getEmail(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ];
-            RepositoryInterface::createOrUpdate($saveUser,['facebook_id' => $user->getId()]);
+            $this->accountRepository->createOrUpdate($saveUser,['facebook_id' => $user->getId()]);            
             auth()->login($saveUser);
             return redirect()->to('/projects');
         } catch (\Throwable $th) {
