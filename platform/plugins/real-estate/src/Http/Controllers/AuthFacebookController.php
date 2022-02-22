@@ -4,9 +4,10 @@ namespace Botble\RealEstate\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Socialite;
+//use Socialite;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthFacebookController extends Controller
 {
