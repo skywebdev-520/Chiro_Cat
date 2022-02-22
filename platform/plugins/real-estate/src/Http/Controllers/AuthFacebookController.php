@@ -27,17 +27,21 @@ class AuthFacebookController extends Controller
      * @return callback URL from facebook
      */
     public function callback()
-    {        
-        $user = Socialite::driver('facebook')->user();
-        $saveUser = [
-            'facebook_id' => $user->getId(),
-            'first_name' => $user->getName(),
-            'username' => $user->getName(),
-            'email' => $user->getEmail(),
-            'password' => Hash::make($user->getName().'@'.$user->getId())
-        ];
-        event(new Registered($this->createOrUpdate($saveUser,['facebook_id' => $user->getId()])));
-        auth()->login($saveUser);
-        return redirect()->to('/projects');
+    {       
+        try { 
+            $user = Socialite::driver('facebook')->user();
+            $saveUser = [
+                'facebook_id' => $user->getId(),
+                'first_name' => $user->getName(),
+                'username' => $user->getName(),
+                'email' => $user->getEmail(),
+                'password' => Hash::make($user->getName().'@'.$user->getId())
+            ];
+            event(new Registered($this->createOrUpdate($saveUser,['facebook_id' => $user->getId()])));
+            auth()->login($saveUser);
+            return redirect()->to('/projects');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }
