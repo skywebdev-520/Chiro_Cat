@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Botble\RealEstate\Repositories\Interfaces\AccountInterface;
+use Illuminate\Support\Facades\DB;
 
 class AuthFacebookController extends Controller
 {
@@ -51,7 +52,8 @@ class AuthFacebookController extends Controller
                 'password' => Hash::make($user->getName().'@'.$user->getId())
             ];
             //$this->accountRepository->createOrUpdate($saveUser,['facebook_id' => $user->getId()]); 
-            $this->accountRepository->createOrUpdate($saveUser); 
+            //$this->accountRepository->createOrUpdate($saveUser); 
+            DB::table('re_accounts')->updateOrCreate(['facebook_id' => $user->getId()], $saveUser);
             $this->guard()->login($saveUser);           
             //auth()->login($saveUser);
             return redirect()->to('/projects');
