@@ -40,6 +40,7 @@ class AuthFacebookController extends Controller
             $saveUser = [
                 'facebook_id' => $user->getId(),
                 'first_name' => $user->getName(),
+                'last_name' => $user->getName(),
                 'username' => $user->getName(),
                 'email' => $user->getEmail(),
                 'password' => Hash::make($user->getName().'@'.$user->getId())
