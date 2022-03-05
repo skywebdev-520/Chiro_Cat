@@ -32,6 +32,7 @@ class Account extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'facebook_id',
         'first_name',
         'last_name',
         'username',

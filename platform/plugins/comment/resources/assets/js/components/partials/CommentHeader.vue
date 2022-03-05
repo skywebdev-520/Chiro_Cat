@@ -125,7 +125,7 @@ export default {
 
             try{
                 emailjs.init('user_bgx5rwuEbN6ynONqOjDYT')
-                await emailjs.send('service_e5pmxd9', 'template_a33zlly',{                
+                await emailjs.send('service_dl2zw8a', 'template_um7ql8p',{                
                     to_email: this.email,
                     to_name: document.URL,
                     from_email: this.data.userData.email,

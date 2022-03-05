@@ -3137,7 +3137,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 _context.prev = 10;
                 emailjs_com__WEBPACK_IMPORTED_MODULE_5__["default"].init('user_bgx5rwuEbN6ynONqOjDYT');
                 _context.next = 14;
-                return emailjs_com__WEBPACK_IMPORTED_MODULE_5__["default"].send('service_e5pmxd9', 'template_a33zlly', {
+                return emailjs_com__WEBPACK_IMPORTED_MODULE_5__["default"].send('service_dl2zw8a', 'template_um7ql8p', {
                   to_email: _this.email,
                   to_name: document.URL,
                   from_email: _this.data.userData.email,
