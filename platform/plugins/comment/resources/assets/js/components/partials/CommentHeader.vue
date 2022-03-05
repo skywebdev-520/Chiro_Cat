@@ -5,15 +5,15 @@
                 <tabs>
                     <tab :selected="true" style="font-size: 20px">
                         {{  data.attrs.count_all }} {{ __('Comments') }}
-                    </tab>
+                    </tab>                   
                 </tabs>
                 
             </strong>
-            <!-- <strong id="invite">
+            <strong id="invite">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
                      INVITE
                  </button>
-            </strong> -->
+            </strong>
             <dropdown
                 @click="() => !isLogged && openLoginForm()"
                 icon="fas fa-comment"

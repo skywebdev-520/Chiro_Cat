@@ -14434,6 +14434,8 @@ var render = function () {
           1
         ),
         _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
         _c("dropdown", {
           attrs: {
             icon: "fas fa-comment",
@@ -14471,7 +14473,7 @@ var render = function () {
           { staticClass: "modal-dialog", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(0),
+              _vm._m(1),
               _vm._v(" "),
               _c("div", { staticClass: "modal-body" }, [
                 _c("form", [
@@ -14612,6 +14614,25 @@ var render = function () {
   ])
 }
 var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("strong", { attrs: { id: "invite" } }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          attrs: {
+            type: "button",
+            "data-toggle": "modal",
+            "data-target": "#exampleModal",
+          },
+        },
+        [_vm._v("\n                 INVITE\n             ")]
+      ),
+    ])
+  },
   function () {
     var _vm = this
     var _h = _vm.$createElement
